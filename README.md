@@ -45,3 +45,40 @@ python example.py
 
 ## License
 MIT
+[Complaint] + [Historical Pairs] + [Analytic Recommendation]
+        │                                     │
+        ▼                                     │
+  Stage 1: TRIAGE ◄────────────────────────┐  │
+        │                                  │  │
+        ▼                                  │  │
+  Stage 1.5: REC VALIDATION ───────────────┘  │
+  (validate analytics against complaint facts)│
+        │                                     │
+        ├─ confidence >= 0.85 + no conflicts ─┤
+        │   → override complexity to SIMPLE   │
+        │                                     │
+        ├─ COMPLEX/AMBIGUOUS ──────────────┐  │
+        │                                  │  │
+        ▼                                  │  │
+  Stage 2: CLARIFICATION                  │  │
+        │                                  │  │
+        ▼                                  │  │
+  Stage 3A: DEEP SIMILARITY   Stage 3B ◄──┘  │
+        │                        │            │
+        └──────────┬─────────────┘            │
+                   ▼                          │
+           Stage 4: DRAFT ◄───── approved_actions + tone
+           (historical ctx + analytics)
+                   │
+                   ▼
+           Stage 5: AUDIT
+           (hallucinations + approved actions present?
+            + rejected actions absent? + legal check)
+                   │
+            ┌──────┴──────┐
+           FAIL          PASS
+            │              │
+            ▼              ▼
+       Stage 6: REWRITE  FINALIZE
+            │
+       Stage 5 (max 2x)
