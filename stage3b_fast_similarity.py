@@ -19,4 +19,4 @@ Historical pairs:
 Score relevance (0-10) for each and extract the applicable excerpt."""
 
     result = call_structured(SYSTEM, user, SimilarityResult, temperature=0.1)
-    return SimilarityResult(**result)
+    return SimilarityResult.model_validate(result)

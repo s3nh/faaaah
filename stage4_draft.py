@@ -61,4 +61,4 @@ def run_draft(
 Write a complete professional response. Include all approved actions. Use [NEEDS: X] for unknowns."""
 
     result = call_structured(SYSTEM, user, DraftResult, temperature=0.15)
-    return DraftResult(**result)
+    return DraftResult.model_validate(result)

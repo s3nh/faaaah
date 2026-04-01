@@ -16,4 +16,4 @@ def run_triage(complaint: str) -> TriageResult:
 Return a structured triage assessment."""
 
     result = call_structured(SYSTEM, user, TriageResult, temperature=0.0)
-    return TriageResult(**result)
+    return TriageResult.model_validate(result)

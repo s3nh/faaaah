@@ -44,4 +44,4 @@ def run_audit(
 Set passed=true ONLY if zero critical findings."""
 
     result = call_structured(SYSTEM, user, AuditResult, temperature=0.0)
-    return AuditResult(**result)
+    return AuditResult.model_validate(result)

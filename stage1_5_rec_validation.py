@@ -48,4 +48,4 @@ Analyst notes: {recommendation.analyst_notes or 'None'}
 Validate each action. Approve only what is safe and applicable."""
 
     result = call_structured(SYSTEM, user, RecommendationValidationResult, temperature=0.0)
-    return RecommendationValidationResult(**result)
+    return RecommendationValidationResult.model_validate(result)

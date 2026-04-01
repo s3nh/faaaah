@@ -34,4 +34,4 @@ Legal caution: {triage.requires_legal_caution}
 Score each pair. Extract only the applicable excerpt. List conflicts and coverage gaps."""
 
     result = call_structured(SYSTEM, user, SimilarityResult, temperature=0.0)
-    return SimilarityResult(**result)
+    return SimilarityResult.model_validate(result)
