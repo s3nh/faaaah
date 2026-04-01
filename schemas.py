@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 from enum import Enum
 
@@ -16,6 +16,8 @@ class RiskLevel(str, Enum):
 
 
 class TriageResult(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     complexity: ComplexityLevel
     risk_level: RiskLevel
     domain: str
@@ -26,18 +28,24 @@ class TriageResult(BaseModel):
 
 
 class MissingInfo(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     field: str
     reason: str
     criticality: str
 
 
 class ClarificationResult(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     missing_information: list[MissingInfo]
     ambiguous_statements: list[str]
     assumed_defaults: list[str]
 
 
 class HistoricalPairScore(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     index: int
     relevance_score: float = Field(ge=0, le=10)
     applicable_claims: list[str]
@@ -47,12 +55,16 @@ class HistoricalPairScore(BaseModel):
 
 
 class SimilarityResult(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     scored_pairs: list[HistoricalPairScore]
     coverage_summary: str
     recommended_threshold: float
 
 
 class DraftResult(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     draft: str
     placeholders: list[str]
     assumptions_made: list[str]
@@ -60,6 +72,8 @@ class DraftResult(BaseModel):
 
 
 class AuditFinding(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     claim: str
     supported_by: str
     severity: str
@@ -67,6 +81,8 @@ class AuditFinding(BaseModel):
 
 
 class AuditResult(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     findings: list[AuditFinding]
     passed: bool
     overall_confidence: float = Field(ge=0, le=1)
@@ -74,12 +90,16 @@ class AuditResult(BaseModel):
 
 
 class ResolutionAction(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     action_type: str
     value: Optional[str] = None
     condition: Optional[str] = None
 
 
 class AnalyticRecommendation(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     recommended_actions: list[ResolutionAction]
     suggested_tone: Optional[str] = None
     priority_level: Optional[str] = None
@@ -90,6 +110,8 @@ class AnalyticRecommendation(BaseModel):
 
 
 class RecommendationValidationResult(BaseModel):
+    model_config = ConfigDict(extra='ignore')
+
     is_applicable: bool
     conflicts_with_complaint: list[str]
     conflicts_with_historical: list[str]

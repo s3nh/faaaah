@@ -22,4 +22,4 @@ Risk level: {triage.risk_level}
 List every missing or ambiguous piece of information. Document assumptions explicitly."""
 
     result = call_structured(SYSTEM, user, ClarificationResult, temperature=0.0)
-    return ClarificationResult(**result)
+    return ClarificationResult.model_validate(result)

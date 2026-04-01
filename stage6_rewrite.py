@@ -28,4 +28,4 @@ def run_rewrite(draft: str, audit: AuditResult, complaint: str) -> DraftResult:
 Instructions: {audit.rewrite_instructions or 'Fix flagged items only.'}"""
 
     result = call_structured(SYSTEM, user, DraftResult, temperature=0.1)
-    return DraftResult(**result)
+    return DraftResult.model_validate(result)
