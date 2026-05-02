@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from typing import AsyncGenerator
 
 from google.adk.agents import LlmAgent, BaseAgent
@@ -196,14 +197,14 @@ class ComplaintPipeline(BaseAgent):
 #  public entry point                                                  #
 # ------------------------------------------------------------------ #
 
-def run_complaint_pipeline(
+async def _run_pipeline_async(
     complaint: str,
     historical_pairs: list[dict],
     recommendation: AnalyticRecommendation,
 ) -> dict:
     APP = "complaint_pipeline"
     session_service = InMemorySessionService()
-    session = session_service.create_session(
+    session = await session_service.create_session(
         app_name=APP,
         user_id="agent",
         state={"complaint": complaint},
@@ -219,30 +220,38 @@ def run_complaint_pipeline(
         session_service=session_service,
     )
 
-    # consume all events (pipeline runs to completion)
-    for _ in runner.run(
+    async for _ in runner.run_async(
         user_id="agent",
         session_id=session.id,
         new_message=types.Content(role="user", parts=[types.Part(text=complaint)]),
     ):
         pass
 
-    state = session_service.get_session(
+    session_obj = await session_service.get_session(
         app_name=APP, user_id="agent", session_id=session.id
-    ).state
+    )
+    state = session_obj.state
 
-    draft   = DraftResult.model_validate(state["draft"])
-    audit   = AuditResult.model_validate(state["audit"])
-    triage  = TriageResult.model_validate(state["triage"])
+    draft     = DraftResult.model_validate(state["draft"])
+    audit     = AuditResult.model_validate(state["audit"])
+    triage    = TriageResult.model_validate(state["triage"])
     validated = ValidatedActions.model_validate(state["validated"])
 
     return {
-        "final_response":      draft.draft,
-        "placeholders":        draft.placeholders,
-        "confidence":          audit.confidence,
-        "audit_passed":        audit.passed,
-        "risk_level":          triage.risk_level,
+        "final_response":        draft.draft,
+        "placeholders":          draft.placeholders,
+        "confidence":            audit.confidence,
+        "audit_passed":          audit.passed,
+        "risk_level":            triage.risk_level,
         "requires_legal_review": triage.requires_legal_caution,
-        "approved_actions":    [a.action_type for a in validated.approved_actions],
-        "analytics_applicable": validated.is_applicable,
+        "approved_actions":      [a.action_type for a in validated.approved_actions],
+        "analytics_applicable":  validated.is_applicable,
     }
+
+
+def run_complaint_pipeline(
+    complaint: str,
+    historical_pairs: list[dict],
+    recommendation: AnalyticRecommendation,
+) -> dict:
+    return asyncio.run(_run_pipeline_async(complaint, historical_pairs, recommendation))
